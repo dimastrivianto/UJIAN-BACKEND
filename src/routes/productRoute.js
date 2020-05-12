@@ -44,6 +44,26 @@ router.post('/products', upload.single('image'), async (req, res) => {
     res.status(500).send(err)
 })
 
+// READ AVATAR
+router.get('/products/image/:name', (req, res) => {
+    const sql = `SELECT image FROM products WHERE name = ?`
+    const data = req.params.name
+
+    conn.query(sql, data, (err, result) => {
+        if(err) return res.send(err.sqlMessage)
+
+        //pakai try catch just in case ada orang pakai postman langsung nembak url dan mau merubah data
+        try {
+            res.sendFile(`${filesDirectory}/${result[0].image}`, (err) => {
+                if(err) return res.send('Anda belum mengupload avatar')
+            })
+        } catch (error) {
+            res.send('Username tidak ditemukan')
+        }
+    })
+})
+
+
 //READ
 router.get('/products', (req, res) => {
     const sql = `SELECT * FROM products WHERE product_id = ${req.query.product_id}`
@@ -51,7 +71,7 @@ router.get('/products', (req, res) => {
     conn.query(sql, (err, result)=> {
         if(err) return res.status(500).send(err)
 
-        res.status(200).send(result) 
+        res.status(200).send({result: result, photo : `http://localhost:2020/products/image/${result[0].name}` }) 
     })
 })
 

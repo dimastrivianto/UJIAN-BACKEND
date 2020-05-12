@@ -15,6 +15,8 @@ router.post('/stores', (req, res) => {
     })
 })
 
+
+
 //READ
 router.get('/stores/:store_id', (req, res) => {
     const sql = `SELECT * FROM stores WHERE store_id = ${req.params.store_id}`
